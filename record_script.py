@@ -1,4 +1,5 @@
 import os
+import sys
 import cv2
 import numpy as np
 import subprocess
@@ -8,10 +9,15 @@ import win32con
 import win32gui
 
 # ========================== 參數設定區 ==========================
-student_id = "M11252014"
+
+PKG_ROOT = "E:\share2\M11201105@ 游輝哲_1043365_assignsubmission_file\m11201105\PyAutoDriveRL-Env-main"
+os.chdir(PKG_ROOT)
+
+student_id = PKG_ROOT.split(os.sep)[-2]
+print(student_id)
 
 # 基本參數
-END_TIME = 30  # 錄製結束時間，單位：秒
+END_TIME = 75  # 錄製結束時間，單位：秒
 VIDEO_PATH = f"results/{student_id}.mp4"  # 錄製影片的存檔路徑
 VIDEO_WIDTH = 720  # 錄製影片的寬度
 VIDEO_HEIGHT = 640  # 錄製影片的高度
@@ -22,7 +28,7 @@ WINDOW_TITLE = 'Car'  # 目標窗口名稱（需與目標窗口標題一致）
 
 # 子程序腳本路徑
 RESET_SCRIPT_PATH = r"C:\Users\Bacon\anaconda3\envs\torch\python.exe"
-RESET_SCRIPT_NAME = "reset_script.py"
+RESET_SCRIPT_NAME = r"E:\python\Car\MyCarRL\reset_script.py"
 INFERENCE_SCRIPT_NAME = "inference_template.py"
 
 # ============================================================
@@ -178,9 +184,10 @@ def record_video():
                 img = ID_display(img)
                 out.write(cv2.resize(img, (VIDEO_WIDTH, VIDEO_HEIGHT)))
                 cv2.imshow("Recording", img)
-                print(f"Remaining time: {remaining_time:.1f} seconds")
+                print(f"\r Remaining time: {remaining_time:.1f} seconds", end="")
                 if cv2.waitKey(1000 // FPS) & 0xFF == 27:
                     break
+            print()
 
             img = np.array(sct.grab(monitor))
             img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
