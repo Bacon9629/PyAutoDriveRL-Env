@@ -8,17 +8,21 @@ import mss
 import win32con
 import win32gui
 
+
+argv = sys.argv
 # ========================== 參數設定區 ==========================
 
-PKG_ROOT = "E:\share2\M11201105@ 游輝哲_1043365_assignsubmission_file\m11201105\PyAutoDriveRL-Env-main"
+PKG_ROOT = argv[1]
+VIDEO_TAG = argv[2] if len(argv) == 3 else ""
+# PKG_ROOT = "E:\share2\M11215119\PyAutoDriveRL-Env"
 os.chdir(PKG_ROOT)
 
 student_id = PKG_ROOT.split(os.sep)[-2]
 print(student_id)
 
 # 基本參數
-END_TIME = 75  # 錄製結束時間，單位：秒
-VIDEO_PATH = f"results/{student_id}.mp4"  # 錄製影片的存檔路徑
+END_TIME = 65  # 錄製結束時間，單位：秒
+VIDEO_PATH = fr"E:\python\Car\MyCarRL\results/{student_id}_{VIDEO_TAG}.mp4"  # 錄製影片的存檔路徑
 VIDEO_WIDTH = 720  # 錄製影片的寬度
 VIDEO_HEIGHT = 640  # 錄製影片的高度
 FPS = 30  # 每秒幀數（Frames Per Second）
@@ -145,7 +149,7 @@ def record_video():
         return
 
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)  # 獲取窗口邊界
-    put_video_foreground()  # 將窗口放置到前台
+    # put_video_foreground()  # 將窗口放置到前台
 
     # 啟動 ResetScript.py
     proc = subprocess.Popen([RESET_SCRIPT_PATH, RESET_SCRIPT_NAME])
@@ -158,8 +162,8 @@ def record_video():
         monitor = {"top": top, "left": left + 10, "width": right - left - 20, "height": bottom - top}
 
         try:
-            # 倒數5秒
-            for remaining_time in range(5, 0, -1):
+            # 倒數3秒
+            for remaining_time in range(3, 0, -1):
                 for _ in range(FPS):
                     img = np.array(sct.grab(monitor))
                     img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
@@ -174,18 +178,25 @@ def record_video():
             print("Starting inference...")
             proc = subprocess.Popen([RESET_SCRIPT_PATH, INFERENCE_SCRIPT_NAME])
 
+            frame_time = 1 / FPS
             start_time = time.time()
-            # 錄製畫面直到設定結束時間
+            tmp_time = time.time()
             while time.time() - start_time < END_TIME:
                 remaining_time = END_TIME - (time.time() - start_time)
+
                 img = np.array(sct.grab(monitor))
                 img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
                 img = text_log_display(img, "Running inference_template.py..., {:.1f} s".format(remaining_time))
                 img = ID_display(img)
-                out.write(cv2.resize(img, (VIDEO_WIDTH, VIDEO_HEIGHT)))
+
+                if time.time() - tmp_time >= frame_time:
+                    out.write(cv2.resize(img, (VIDEO_WIDTH, VIDEO_HEIGHT)))
+                    tmp_time += frame_time  # 增加时间间隔，而不是重置为当前时间
+
+                # 显示窗口
                 cv2.imshow("Recording", img)
                 print(f"\r Remaining time: {remaining_time:.1f} seconds", end="")
-                if cv2.waitKey(1000 // FPS) & 0xFF == 27:
+                if cv2.waitKey(1) & 0xFF == 27:  # ESC 键退出
                     break
             print()
 
@@ -198,6 +209,8 @@ def record_video():
             proc.terminate()
             proc.wait()
 
+            proc = subprocess.Popen([RESET_SCRIPT_PATH, RESET_SCRIPT_NAME])
+
             # 停留最後一幀3秒
             print("Recording finished, showing final frame...")
             for _ in range(3 * FPS):
@@ -205,6 +218,8 @@ def record_video():
                 cv2.imshow("Recording", img)
                 if cv2.waitKey(1000 // FPS) & 0xFF == 27:
                     break
+
+            proc = subprocess.Popen([RESET_SCRIPT_PATH, RESET_SCRIPT_NAME])
 
             # 淡出處理
             for i in range(30):
@@ -214,6 +229,9 @@ def record_video():
                 cv2.imshow("Recording", faded_frame)
                 if cv2.waitKey(1000 // FPS) & 0xFF == 27:
                     break
+
+            proc = subprocess.Popen([RESET_SCRIPT_PATH, RESET_SCRIPT_NAME])
+            proc.wait()
 
         finally:
             # 釋放資源
