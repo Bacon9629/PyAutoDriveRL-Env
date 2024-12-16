@@ -22,7 +22,7 @@ print(student_id)
 
 # 基本參數
 END_TIME = 65  # 錄製結束時間，單位：秒
-VIDEO_PATH = fr"E:\python\Car\MyCarRL\results/{student_id}_{VIDEO_TAG}.mp4"  # 錄製影片的存檔路徑
+VIDEO_PATH = fr"C:\Users\miisl\PyAutoDriveRL-Env\results/{student_id}_{VIDEO_TAG}.mp4"  # 錄製影片的存檔路徑
 VIDEO_WIDTH = 720  # 錄製影片的寬度
 VIDEO_HEIGHT = 640  # 錄製影片的高度
 FPS = 30  # 每秒幀數（Frames Per Second）
@@ -31,8 +31,8 @@ FPS = 30  # 每秒幀數（Frames Per Second）
 WINDOW_TITLE = 'Car'  # 目標窗口名稱（需與目標窗口標題一致）
 
 # 子程序腳本路徑
-RESET_SCRIPT_PATH = r"C:\Users\Bacon\anaconda3\envs\torch\python.exe"
-RESET_SCRIPT_NAME = r"E:\python\Car\MyCarRL\reset_script.py"
+RESET_SCRIPT_PATH = r"C:\Users\miisl\miniconda3\envs\autodrive_rl\python.exe"
+RESET_SCRIPT_NAME = r"C:\Users\miisl\PyAutoDriveRL-Env\reset_script.py"
 INFERENCE_SCRIPT_NAME = "inference_template.py"
 
 # ============================================================
@@ -149,6 +149,10 @@ def record_video():
         return
 
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)  # 獲取窗口邊界
+    left += VIDEO_WIDTH // 3 - 10
+    right += VIDEO_WIDTH // 2
+    top += 10
+    bottom += VIDEO_HEIGHT // 3 - 75
     # put_video_foreground()  # 將窗口放置到前台
 
     # 啟動 ResetScript.py
