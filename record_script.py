@@ -153,7 +153,7 @@ def record_video():
     right += VIDEO_WIDTH // 2
     top += 10
     bottom += VIDEO_HEIGHT // 3 - 75
-    # put_video_foreground()  # 將窗口放置到前台
+    put_video_foreground()  # 將窗口放置到前台
 
     # 啟動 ResetScript.py
     proc = subprocess.Popen([RESET_SCRIPT_PATH, RESET_SCRIPT_NAME])
