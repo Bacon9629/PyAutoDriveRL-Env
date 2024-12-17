@@ -49,7 +49,7 @@ if __name__ == '__main__':
         'M11315002 黃正鵬、M11352030 詹岫尹': r'Z:\MiiSLab_Work\1. 課程相關資料\2024 RL\期末資料夾\大家的package\M11315002黃正鵬Ｍ11352030詹岫尹\PyAutoDriveRL-Env',
     }
 
-    path = path_dict['M11352023 徐彥崴']
+    path = path_dict['B10915004 鄭典、M11352021 徐瑞廷']
     
     # print(path)
     process = subprocess.Popen(['python', 'record_script.py', path])
